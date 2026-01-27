@@ -1,46 +1,37 @@
-from flask import Flask, request
+import streamlit as st
 import requests
-import os
-app = Flask(__name__)
+import json
 
-# VERIFY_TOKEN = "mywhatsappbot123"
-# TOKEN = "EAATq4RblNQoBQkmU6IAsyDdt6wI8Q7i8rR5prP96Mmbr18HEYRuIfMqK2yUtoFzjohdMc76DSFCSmbaUZBRWOGzoOCjRfNAtjhItyMFSVzryx3q7R781ppG7owBGCjzALer6CPjW0ZA3Fz2Uto7LwnkzyYZAifhU6SI1LoScpQSkIx76MYKhNxngXfdxnDCi89oZAogBDgGqND3WvtD4P6O0lXk1hBZBU4irZBZBmH1omqNzLMKVYoZAKIh8Xlc8NlzPFQ4NtGKXQAisNkaT5HkM"
-# PHONE_NUMBER_ID = "03206010205"
+VERIFY_TOKEN = "mywhatsappbot123"
+TOKEN = "EAATq4RblNQoBQlPsfpabIOicgcg1ClgqTmsZBMW3YNDi3WRqgRMkSilNZBuZCeUES7r8koJGVfW3BPcCzPxu3vYvRvizkFSY5iHwQY0681Hl6ZCAnLl61QrV4iqp5SmPRpeBKhgZCrlvyv8Xh617NSH10G6BIo6BDqpSwwif8EZBdfPen4gfQMusDwrH8nEb53vB5q4OK4ugVENOUgepWulojEnfu6R2Fj8sfdaZCTVK8NFLmrxEUZA7BP38bTnbmMWwUdLez6cE93biXwfSboOA"
+PHONE_NUMBER_ID = "03206010205"
 
-VERIFY_TOKEN = os.getenv("mywhatsappbot123")
-WHATSAPP_TOKEN = os.getenv("EAATq4RblNQoBQkmU6IAsyDdt6wI8Q7i8rR5prP96Mmbr18HEYRuIfMqK2yUtoFzjohdMc76DSFCSmbaUZBRWOGzoOCjRfNAtjhItyMFSVzryx3q7R781ppG7owBGCjzALer6CPjW0ZA3Fz2Uto7LwnkzyYZAifhU6SI1LoScpQSkIx76MYKhNxngXfdxnDCi89oZAogBDgGqND3WvtD4P6O0lXk1hBZBU4irZBZBmH1omqNzLMKVYoZAKIh8Xlc8NlzPFQ4NtGKXQAisNkaT5HkM")
-PHONE_NUMBER_ID = os.getenv("03206010205")
+st.title("✅ WhatsApp Bot Running")
+st.write("Your WhatsApp agent is live!")
 
-@app.route("/webhook", methods=["GET", "POST"])
-def webhook():
-    if request.method == "GET":
-        if request.args.get("hub.verify_token") == VERIFY_TOKEN:
-            return request.args.get("hub.challenge")
-        return "Invalid token", 403
-
-    data = request.json
+# Streamlit webhook handler
+if st.experimental_get_query_params():
     try:
+        data = json.loads(st.experimental_get_query_params()["payload"][0])
+
         msg = data["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
         sender = data["entry"][0]["changes"][0]["value"]["messages"][0]["from"]
+
+        reply = "Hello 👋 I am your Streamlit WhatsApp agent!"
+
+        url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
+        headers = {
+            "Authorization": f"Bearer {TOKEN}",
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "messaging_product": "whatsapp",
+            "to": sender,
+            "text": {"body": reply}
+        }
+
+        requests.post(url, json=payload, headers=headers)
+
     except:
-        return "ok", 200
-
-    reply = "Hello 👋 Your WhatsApp bot is now LIVE!"
-
-    url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
-    headers = {
-        "Authorization": f"Bearer {TOKEN}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "messaging_product": "whatsapp",
-        "to": sender,
-        "text": {"body": reply}
-    }
-
-    requests.post(url, json=payload, headers=headers)
-    return "ok", 200
-
-if __name__ == "__main__":
-    app.run()
+        pass
