@@ -3,8 +3,8 @@ import requests
 
 app = Flask(__name__)
 
-TOKEN = "YOUR_ACCESS_TOKEN"
-PHONE_NUMBER_ID = "YOUR_PHONE_NUMBER_ID"
+TOKEN = "EAATq4RblNQoBQlPsfpabIOicgcg1ClgqTmsZBMW3YNDi3WRqgRMkSilNZBuZCeUES7r8koJGVfW3BPcCzPxu3vYvRvizkFSY5iHwQY0681Hl6ZCAnLl61QrV4iqp5SmPRpeBKhgZCrlvyv8Xh617NSH10G6BIo6BDqpSwwif8EZBdfPen4gfQMusDwrH8nEb53vB5q4OK4ugVENOUgepWulojEnfu6R2Fj8sfdaZCTVK8NFLmrxEUZA7BP38bTnbmMWwUdLez6cE93biXwfSboOA"
+PHONE_NUMBER_ID = "03206010205"
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
